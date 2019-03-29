@@ -7,7 +7,8 @@ def shuntAlg(infix):
 
   operationChar = { '*': 5, '.': 4, '|': 3 }
   postfix, stack =  "", ""
-
+  
+  # read in infix expression a char at a time
   for c in infix:
     if c == '(':
       stack = stack + c
@@ -25,7 +26,7 @@ def shuntAlg(infix):
   while stack:
     postfix, stack = postfix + stack[-1], stack[:-1]
 
-  # returns an 
+  # returns postfix expression
   return postfix
 
 print(shuntAlg("(a.b)|(c*.d)"))
