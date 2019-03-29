@@ -14,19 +14,23 @@ def shuntAlg(infix):
       stack = stack + c
     elif c == ')':
       while stack[-1] != '(':
+        # add end of stack to postfix and remove from stack until '(' is found
         postfix, stack = postfix + stack[-1], stack[:-1]
+      # removing '(' from stack
       stack = stack[:-1]
     elif c in operationChar:
+      # while operationChar from infix <= last operationChar on stack
       while stack and operationChar.get(c,0) <= operationChar.get(stack[-1],0):
         postfix, stack = postfix + stack[-1], stack[:-1]
       stack = stack + c
+    # is normal char, added to the postfix
     else:
       postfix = postfix + c
       
+  # add whats left of the stack to the postfix    
   while stack:
     postfix, stack = postfix + stack[-1], stack[:-1]
 
-  # returns postfix expression
   return postfix
 
 print(shuntAlg("(a.b)|(c*.d)"))
