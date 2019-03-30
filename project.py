@@ -1,36 +1,56 @@
 # Colin Roche - G00349215
 
-# Shunting Yard Algorithm 
-# takes in a infix experssion and returns an equivalent postfix expression
-# example of string containing infix expression - "(a.b)|(c*.d)"
+### Shunting Yard Algorithm ###
+# Takes in a infix experssion and returns an equivalent postfix expression
+# Example of string containing infix expression - "(a.b)|(c*.d)"
 def shuntAlg(infix):
 
   operationChar = { '*': 5, '.': 4, '|': 3 }
   postfix, stack =  "", ""
   
-  # read in infix expression a char at a time
+  # Read in infix expression a char at a time
   for c in infix:
     if c == '(':
       stack = stack + c
     elif c == ')':
       while stack[-1] != '(':
-        # add end of stack to postfix and remove from stack until '(' is found
+        # Add end of stack to postfix and remove from stack until '(' is found
         postfix, stack = postfix + stack[-1], stack[:-1]
-      # removing '(' from stack
+      # Removing '(' from stack
       stack = stack[:-1]
     elif c in operationChar:
-      # while operationChar from infix <= last operationChar on stack
+      # While operationChar from infix <= last operationChar on stack
       while stack and operationChar.get(c,0) <= operationChar.get(stack[-1],0):
         postfix, stack = postfix + stack[-1], stack[:-1]
       stack = stack + c
-    # is normal char, added to the postfix
+    # Is normal char, added to the postfix
     else:
       postfix = postfix + c
       
-  # add whats left of the stack to the postfix    
+  # Add whats left of the stack to the postfix    
   while stack:
     postfix, stack = postfix + stack[-1], stack[:-1]
 
   return postfix
 
 print(shuntAlg("(a.b)|(c*.d)"))
+
+### Thompson's Construction ###
+
+class state:
+  label = None
+  edge1 = None
+  edge2 = None
+
+class nfa:
+  initial = None
+  accept = None
+
+  # NFA constructor
+  def __init__(self, initial, accept):
+    self.initial = initial
+    self.accept = accept
+
+def compile(postfix)
+  # Contains instances of the NFA class
+  nfaStack = []
