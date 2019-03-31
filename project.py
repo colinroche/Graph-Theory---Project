@@ -174,19 +174,24 @@ def matchStr(infix, string):
 ### Test ###
 print('Infixes to pick from:\n')
 print('"(a.b)|(c*.d)", "a.b.c*", "a.(b|d).c*", "(a.(b|d))*","a.(b.b)*.c"\n')
+# Prompt user to input infix expression
 infix = input("Enter a Valid Infix Expression\n")
 
+# Chars present in infix expression
 s = stringer(infix)
 print("Characters in infix:", s)
 
+# Calling method to convert infix to postfix
 postfix = shuntAlg(infix)
 print("Postfix Expression:", postfix)
 
-
+# List of string to test against
 strings = ["", "ab", "cd", "abc", "abbc", "abcc", "abad", "abbbc"]
 
  # Loop through string of list
 for s in strings:
+  # Call instance of matchStr method
   match = matchStr(infix, s)
+  # Combine outputs
   output = infix, s, match
   print(output)
