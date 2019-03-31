@@ -4,6 +4,8 @@
 # Takes in a infix experssion and returns an equivalent postfix expression
 # Example of string containing infix expression - "(a.b)|(c*.d)"
 def shuntAlg(infix):
+  """Shunting Vard Algorithm that converts infix expressions to postfix 
+    expressions."""
 
   operationChar = { '*': 5, '.': 4, '|': 3 }
   postfix, stack =  "", ""
@@ -27,7 +29,7 @@ def shuntAlg(infix):
     else:
       postfix = postfix + c
       
-  # Add whats left of the stack to the postfix    
+  # Pop all chars of stack to output    
   while stack:
     postfix, stack = postfix + stack[-1], stack[:-1]
 
@@ -48,6 +50,7 @@ class nfa:
     self.initial, self.accept = initial, accept
 
 def thompsonCompiler(postfix):
+  """Compiler for compile a postfix expression to an NFA"""
   # Contains instances of the NFA class
   nfaStack = []
 
@@ -60,7 +63,7 @@ def thompsonCompiler(postfix):
       # Join new initial state to the NFA's initial state and the new accpet state
       initial.edge1, initial.edge2 = nfa1.initial, accept
       # Join old accept state to new accept state and NFA's initial state
-      nfa1.accept.edge1, nfa1.accept.edge2 = nfa.initial, accept
+      nfa1.accept.edge1, nfa1.accept.edge2 = nfa1.initial, accept
       # Add new NFA containing these states to the nfaStack
       nfaStack.append(nfa(initial, accept))
 
@@ -95,5 +98,44 @@ def thompsonCompiler(postfix):
       
   return nfaStack.pop()
 
-print(thompsonCompiler("ab.cd.|"))
-print(thompsonCompiler("aa*"))
+def follow(state):
+  """Return the set of states that can be reached from state following e arrows"""
+
+  states = set()
+  states.add(state)
+
+  if state.label is None:
+    if state.edge1 is not None:
+      states |= follow(state.edge1)
+    if state.edge2 is not None:
+      states |= follow(state.edge2)
+  
+  return states
+
+### Regular expression matcher ###
+
+def matchStr(infix, string):
+  """Matchs string to expression string (infix)"""
+  postfix = shuntAlg(infix)
+  nfa = thompsonCompiler(postfix)
+
+  currentSet, nextSet = set(), set()
+  
+  currentSet |= follow(nfa.initial)
+
+  for s in string:
+    for c in currentSet:
+      if c.label == s:
+        nextSet |= follow(c.edge1)
+    currentSet = nextSet
+    nextSet = set()
+  
+  return (nfa.accept in currentSet)  
+
+# Test
+infixStrings = ["a.b.c*", "a.(b|d).c*", "(a.(b|d))*", "a.(b.b)*.c"]
+strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
+
+for i in infixStrings:
+  for s in strings:
+    print(matchStr(i, s), i, s)
