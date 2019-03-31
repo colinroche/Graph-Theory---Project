@@ -35,6 +35,25 @@ def shuntAlg(infix):
 
   return postfix
 
+def stringer(infix):
+  stack = ""
+
+  for c in infix:
+    if c == '*':
+      stack = stack
+    elif c == '.':
+      stack = stack
+    elif c == '|':
+      stack = stack
+    elif c == '(':
+      stack = stack
+    elif c == ')':
+      stack = stack
+    else:
+      stack = stack + c
+  
+  return stack
+
 class state:
   label, edge1, edge2 = None, None, None
 
@@ -152,12 +171,22 @@ def matchStr(infix, string):
   # Check if accept state is in current set
   return (nfa.accept in currentSet)  
 
-# Test
-infixStrings = ["a.b.c*", "a.(b|d).c*", "(a.(b|d))*", "a.(b.b)*.c"]
-strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
+### Test ###
+print('Infixes to pick from:\n')
+print('"(a.b)|(c*.d)", "a.b.c*", "a.(b|d).c*", "(a.(b|d))*","a.(b.b)*.c"\n')
+infix = input("Enter a Valid Infix Expression\n")
 
-# Loop through string of list
-for i in infixStrings:
-  # Loop through string of list
-  for s in strings:
-    print(matchStr(i, s), i, s)
+s = stringer(infix)
+print("Characters in infix:", s)
+
+postfix = shuntAlg(infix)
+print("Postfix Expression:", postfix)
+
+
+strings = ["", "ab", "cd", "abc", "abbc", "abcc", "abad", "abbbc"]
+
+ # Loop through string of list
+for s in strings:
+  match = matchStr(infix, s)
+  output = infix, s, match
+  print(output)
