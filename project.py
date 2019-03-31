@@ -38,18 +38,14 @@ print(shuntAlg("(a.b)|(c*.d)"))
 ### Thompson's Construction ###
 
 class state:
-  label = None
-  edge1 = None
-  edge2 = None
+  label, edge1, edge2 = None, None, None
 
 class nfa:
-  initial = None
-  accept = None
+  initial, accept = None, None
 
   # NFA constructor
   def __init__(self, initial, accept):
-    self.initial = initial
-    self.accept = accept
+    self.initial, self.accept = initial, accept
 
 def thompsonCompiler(postfix):
   # Contains instances of the NFA class
@@ -60,21 +56,17 @@ def thompsonCompiler(postfix):
       # Pop 1 NFA off of nfaStack
       nfa1 = nfaStack.pop()
       # Create new accept and initail states
-      initial = state()
-      accept = state()
+      initial, accept = state(), state()
       # Join new initial state to the NFA's initial state and the new accpet state
-      initial.edge1 = nfa1.initial
-      initial.edge2 = accept
+      initial.edge1, initial.edge2 = nfa1.initial, accept
       # Join old accept state to new accept state and NFA's initial state
-      nfa1.accept.edge1 = nfa.initial
-      nfa1.accept.edge2 = accept
+      nfa1.accept.edge1, nfa1.accept.edge2 = nfa.initial, accept
       # Add new NFA containing these states to the nfaStack
       nfaStack.append(nfa(initial, accept))
 
     elif c == '.':
       # Pop 2 NFA's off of nfaStack
-      nfa2 = nfaStack.pop()
-      nfa1 = nfaStack.pop()
+      nfa2, nfa1 = nfaStack.pop(), nfaStack.pop()
       # Join NFA's, first accept to second initial
       nfa1.accept.edge1 = nfa2.initial
       # Add new NFA containing these states to the nfaStack
@@ -82,33 +74,26 @@ def thompsonCompiler(postfix):
     
     elif c == '|':
       # Pop 2 NFA's off of nfaStack
-      nfa2 = nfaStack.pop()
-      nfa1 = nfaStack.pop()
-      # Create new accept and initail states
-      initial = state()
-      accept = state()
+      nfa2, nfa1 = nfaStack.pop(), nfaStack.pop()
+      # Create new accept and initial states
+      initial, accept = state(), state()
       # Join initial state to initial states of NFA's on stack
-      initial.edge1 = nfa1.initial
-      initial.edge2 = nfa2.initial
+      initial.edge1, initial.edge2 = nfa1.initial, nfa2.initial
       # Joining the accept states of the NFA's popped from stack to new accept state
-      nfa1.accept.edge1 = accept
-      nfa2.accept.edge1 = accept
+      nfa1.accept.edge1, nfa2.accept.edge1 = accept, accept
       # Add new NFA containing these states to the nfaStack
       nfaStack.append(nfa(initial, accept))
       
     ## Normal char
     else:
       # Create new accept and initail states
-      accept = state()
-      initial = state()
+      accept, initial = state(), state()
       # Join the initial and accept states using an arrow labelled c
-      initial.label = c
-      initial.edge1 = accept
+      initial.label, initial.edge1 = c, accept
       # Add new NFA containing these states to the nfaStack
       nfaStack.append(nfa(initial, accept))
       
   return nfaStack.pop()
-
 
 print(thompsonCompiler("ab.cd.|"))
 print(thompsonCompiler("aa*"))
