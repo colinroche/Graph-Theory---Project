@@ -35,10 +35,6 @@ def shuntAlg(infix):
 
   return postfix
 
-print(shuntAlg("(a.b)|(c*.d)"))
-
-### Thompson's Construction ###
-
 class state:
   label, edge1, edge2 = None, None, None
 
@@ -49,8 +45,11 @@ class nfa:
   def __init__(self, initial, accept):
     self.initial, self.accept = initial, accept
 
+### Thompson's Construction ###
+
 def thompsonCompiler(postfix):
   """Compiler for compile a postfix expression to an NFA"""
+  
   # Contains instances of the NFA class
   nfaStack = []
 
@@ -100,42 +99,65 @@ def thompsonCompiler(postfix):
 
 def follow(state):
   """Return the set of states that can be reached from state following e arrows"""
-
+  
+  # Create a set, add state as only member
   states = set()
   states.add(state)
 
+  # Check if state has an arrow labelled empty(e) from it
   if state.label is None:
+    # Check if edge1 has a state
     if state.edge1 is not None:
+      # Follow edge1
       states |= follow(state.edge1)
+    # Check if edge2 has a state
     if state.edge2 is not None:
+      # Follow edge2
       states |= follow(state.edge2)
   
+  # Return set
   return states
 
-### Regular expression matcher ###
+### Regular Expression Matcher ###
 
 def matchStr(infix, string):
   """Matchs string to expression string (infix)"""
+
+  # Call instance of Shunting's Algorithm  
+  # Changes an infix expression to a postfix expression
   postfix = shuntAlg(infix)
+
+  # Call instance of Thompson's Algorithm 
+  # Compiles postfix expression to an nfa
   nfa = thompsonCompiler(postfix)
 
+  # Create new Sets for current and next state
   currentSet, nextSet = set(), set()
-  
+  # Add NFA's initial state to the current set
   currentSet |= follow(nfa.initial)
 
+  # Loop through char of string
   for s in string:
+    # Loop through state of current set
     for c in currentSet:
+      # Check is the state is labelled s
       if c.label == s:
+        # Add the state of edge1 to next set
         nextSet |= follow(c.edge1)
+    # Set current set to next set
     currentSet = nextSet
+    # Set next set to new set, empty
     nextSet = set()
   
+  # Check if accept state is in current set
   return (nfa.accept in currentSet)  
 
 # Test
 infixStrings = ["a.b.c*", "a.(b|d).c*", "(a.(b|d))*", "a.(b.b)*.c"]
 strings = ["", "abc", "abbc", "abcc", "abad", "abbbc"]
 
+# Loop through string of list
 for i in infixStrings:
+  # Loop through string of list
   for s in strings:
     print(matchStr(i, s), i, s)
