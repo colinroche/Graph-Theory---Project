@@ -51,6 +51,47 @@ class nfa:
     self.initial = initial
     self.accept = accept
 
-def compile(postfix)
+def thompsonCompiler(postfix):
   # Contains instances of the NFA class
   nfaStack = []
+
+  for c in postfix:
+    if c == '*':
+      nfa1 = nfaStack.pop()
+      initial = state()
+      accept = state()
+      initial.edge1 = nfa1.initial
+      initial.edge2 = accept
+      nfa1.accept.edge1 = nfa.initial
+      nfa1.accept.edge2 = accept
+      nfaStack.append(nfa(initial, accept))
+
+    elif c == '.':
+      nfa2 = nfaStack.pop()
+      nfa1 = nfaStack.pop()
+      nfa1.accept.edge1 = nfa2.initial
+      nfaStack.append(nfa(nfa1.initial, nfa2.accept))
+    
+    elif c == '|':
+      nfa2 = nfaStack.pop()
+      nfa1 = nfaStack.pop()
+      initial = state()
+      accept = state()
+      initial.edge1 = nfa1.initial
+      initial.edge2 = nfa2.initial
+      nfa1.accept.edge1 = accept
+      nfa2.accept.edge1 = accept
+      nfaStack.append(nfa(initial, accept))
+      
+    else:
+      accept = state()
+      initial = state()
+      initial.label = c
+      initial.edge1 = accept
+      nfaStack.append(nfa(initial, accept))
+      
+  return nfaStack.pop()
+
+
+print(thompsonCompiler("ab.cd.|"))
+print(thompsonCompiler("aa*"))
